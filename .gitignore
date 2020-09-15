@@ -3,3 +3,9 @@
 .project
 .settings
 .cproject
+
+# VS Code
+.vscode
+
+# Build
+/build/

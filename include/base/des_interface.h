@@ -45,5 +45,22 @@ private:
 	 * @return int
 	 */
 	int calculate_s_box(std::vector<int> v, int start, int group);
+
+	/**
+	 * @brief Generate 16 cypher keys each of 48 bit from the key.
+	 *
+	 * @param key
+	 * @param keys
+	 */
+	void generate_keys(std::string key, std::vector<int> keys[]);
+
+	/**
+	 * @brief Generate the des cypher of the source string from the keys.
+	 *
+	 * @param src
+	 * @param keys
+	 * @return std::string
+	 */
+	std::string generate_des(std::string src, std::vector<int> keys[]);
 };
 } // namespace des

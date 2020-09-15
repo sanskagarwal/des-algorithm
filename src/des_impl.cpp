@@ -13,16 +13,38 @@ void Des::encrypt(std::string key, const std::string src, std::string &dest) {
 	if (key.size() != DES_KEY_SIZE || src.size() != DES_BLOCK_SIZE)
 		throw "Invalid Data";
 
+	std::vector<int> keys[16];
+	generate_keys(key, keys);
+
+	dest = generate_des(src, keys);
+}
+
+void Des::decrypt(std::string key, const std::string src, std::string &dest) {
+// Data Validation
+	if (key.size() != DES_KEY_SIZE)
+		throw "Invalid Key length";
+
+	std::vector<int> keys[16];
+	generate_keys(key, keys);
+
+	for (int i = 0; i < 8; i++) {
+		std::vector<int> temp = keys[i];
+		keys[i] = keys[16 - i - 1];
+		keys[16 - i - 1] = temp;
+	}
+
+	dest = generate_des(src, keys);
+}
+
+void Des::generate_keys(std::string key, std::vector<int> keys[]) {
 	int i;
 
 	// Create 16 subkeys, each of which is 48-bits.
-	std::vector<int> bin_key = str_to_binary(key);
+	std::vector<int> bin_key = des::str_to_binary(key);
 	std::vector<int> perm_key;
 
 	for (i = 0; i < 56; i++)
 		perm_key.push_back(bin_key[pc1[i] - 1]);
-
-	assert(perm_key.size() == 56);
 
 	int perm_key_bits = perm_key.size();
 	std::vector<int> c_key[17], d_key[17];
@@ -32,11 +54,10 @@ void Des::encrypt(std::string key, const std::string src, std::string &dest) {
 	}
 
 	for (i = 1; i < 17; i++) {
-		c_key[i] = circular_shift(c_key[i - 1], -shift_table[i - 1]);
-		d_key[i] = circular_shift(d_key[i - 1], -shift_table[i - 1]);
+		c_key[i] = des::circular_shift(c_key[i - 1], -shift_table[i - 1]);
+		d_key[i] = des::circular_shift(d_key[i - 1], -shift_table[i - 1]);
 	}
 
-	std::vector<int> keys[16];
 	for (i = 0; i < 16; i++) {
 		for (int j = 0; j < 48; j++) {
 			int num = pc2[j];
@@ -46,13 +67,15 @@ void Des::encrypt(std::string key, const std::string src, std::string &dest) {
 				keys[i].push_back(c_key[i + 1][num - 1]);
 		}
 	}
+}
 
-	assert(keys[0].size() == 48);
+std::string Des::generate_des(std::string src, std::vector<int> keys[]) {
+	int i;
 
 	// Encode each 64-bit block of data.
-	std::vector<int> bin_src = str_to_binary(src);
+	std::vector<int> bin_src = des::str_to_binary(src);
 	std::vector<int> perm_src;
-	for (i = 0; i < bin_key.size(); i++)
+	for (i = 0; i < bin_src.size(); i++)
 		perm_src.push_back(bin_src[ip[i] - 1]);
 
 	int perm_src_bits = perm_src.size();
@@ -69,41 +92,30 @@ void Des::encrypt(std::string key, const std::string src, std::string &dest) {
 			r_src_exp.push_back(r_src[i - 1][ebit_table[j] - 1]);
 		}
 
-		std::vector<int> key_rsrc_xor = xor_(r_src_exp, keys[i - 1]);
-
-		assert(key_rsrc_xor.size() == 48);
-
+		std::vector<int> key_rsrc_xor = des::xor_(r_src_exp, keys[i - 1]);
 		std::vector<int> sb;
 		for (int j = 0; j < key_rsrc_xor.size(); j += 6) {
 			int num = calculate_s_box(key_rsrc_xor, j, j / 6 + 1);
-			std::vector<int> temp = int_to_binary(num, 4);
+			std::vector<int> temp = des::int_to_binary(num, 4);
 			sb.insert(sb.end(), temp.begin(), temp.end());
 		}
-
-		assert(sb.size() == 32);
-		assert(l_src[i - 1].size() == 32);
 
 		std::vector<int> sb_p;
 		for (int j = 0; j < sb.size(); j++)
 			sb_p.push_back(sb[per[j] - 1]);
-		r_src[i] = xor_(l_src[i - 1], sb_p);
+		r_src[i] = des::xor_(l_src[i - 1], sb_p);
 	}
-
-	assert(r_src[16].size() == 32);
 
 	std::vector<int> comb;
 	comb.insert(comb.end(), r_src[16].begin(), r_src[16].end());
 	comb.insert(comb.end(), l_src[16].begin(), l_src[16].end());
 
+	std::string dest;
 	for (i = 0; i < comb.size(); i++) {
 		dest += comb[ip_inv[i] - 1] == 1 ? '1' : '0';
 	}
-}
 
-void Des::decrypt(std::string key, const std::string src, std::string &dest) {
-// Data Validation
-	if (key.size() != DES_KEY_SIZE)
-		throw "Invalid Key length";
+	return dest;
 }
 
 int Des::calculate_s_box(std::vector<int> v, int start, int group) {
