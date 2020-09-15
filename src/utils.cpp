@@ -23,4 +23,21 @@ namespace des
 
         return bin;
     }
+
+    std::vector<int> circular_shift(const std::vector<int> &v, int times)
+    {
+        std::vector<int> temp;
+        int n = v.size();
+        for (int i = 0; i < n; i++)
+        {
+            int shift = i + times;
+            while (shift < 0)
+                shift += n;
+            if (shift >= n)
+                shift %= n;
+            temp[shift] = v[i];
+        }
+
+        return temp;
+    }
 } // namespace des
