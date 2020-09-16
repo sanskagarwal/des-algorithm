@@ -3,14 +3,15 @@
 #include <algorithm>
 
 #include "utils.h"
+#include "hex_maps.h"
 
 namespace des {
-std::vector<int> str_to_binary(std::string s) {
+std::vector<int> hex_str_to_binary(std::string s) {
 	int n = s.length();
 	std::vector<int> bin;
 	for (int i = 0; i < n; i++) {
-		int val = s[i];
-		std::vector<int> temp = int_to_binary(val, 8);
+		int val = hex_char_to_int.at(s[i]);
+		std::vector<int> temp = int_to_binary(val, 4);
 		bin.insert(bin.end(), temp.begin(), temp.end());
 	}
 

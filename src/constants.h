@@ -1,3 +1,5 @@
+#pragma once
+
 /**
  * @brief PC1 Table.
  *

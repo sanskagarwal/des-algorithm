@@ -1,15 +1,17 @@
 #include <assert.h>
-#include <base/des_interface.h>
 
 #include <vector>
 #include <string>
 
-#include "utils.h"
+#include "base/des_interface.h"
+
 #include "constants.h"
+#include "utils.h"
+#include "hex_maps.h"
 
 namespace des {
 void Des::encrypt(std::string key, const std::string src, std::string &dest) {
-	// Key Validation.
+	// Data Validation.
 	if (key.size() != DES_KEY_SIZE || src.size() != DES_BLOCK_SIZE)
 		throw "Invalid Data";
 
@@ -20,7 +22,7 @@ void Des::encrypt(std::string key, const std::string src, std::string &dest) {
 }
 
 void Des::decrypt(std::string key, const std::string src, std::string &dest) {
-// Data Validation
+	// Data Validation.
 	if (key.size() != DES_KEY_SIZE)
 		throw "Invalid Key length";
 
@@ -40,7 +42,7 @@ void Des::generate_keys(std::string key, std::vector<int> keys[]) {
 	int i;
 
 	// Create 16 subkeys, each of which is 48-bits.
-	std::vector<int> bin_key = des::str_to_binary(key);
+	std::vector<int> bin_key = des::hex_str_to_binary(key);
 	std::vector<int> perm_key;
 
 	for (i = 0; i < 56; i++)
@@ -73,7 +75,7 @@ std::string Des::generate_des(std::string src, std::vector<int> keys[]) {
 	int i;
 
 	// Encode each 64-bit block of data.
-	std::vector<int> bin_src = des::str_to_binary(src);
+	std::vector<int> bin_src = des::hex_str_to_binary(src);
 	std::vector<int> perm_src;
 	for (i = 0; i < bin_src.size(); i++)
 		perm_src.push_back(bin_src[ip[i] - 1]);
@@ -111,8 +113,14 @@ std::string Des::generate_des(std::string src, std::vector<int> keys[]) {
 	comb.insert(comb.end(), l_src[16].begin(), l_src[16].end());
 
 	std::string dest;
-	for (i = 0; i < comb.size(); i++) {
-		dest += comb[ip_inv[i] - 1] == 1 ? '1' : '0';
+
+	for (i = 0; i < comb.size(); i += 4) {
+		int x1 = comb[ip_inv[i] - 1];
+		int x2 = comb[ip_inv[i + 1] - 1];
+		int x3 = comb[ip_inv[i + 2] - 1];
+		int x4 = comb[ip_inv[i + 3] - 1];
+		int num = x1 * 8 + x2 * 4 + x3 * 2 + x4;
+		dest += hex_int_to_char.at(num);
 	}
 
 	return dest;

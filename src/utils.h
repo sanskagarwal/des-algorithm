@@ -2,12 +2,12 @@
 
 namespace des {
 /**
- * @brief Convert a string into binary represented as vector of integers.
+ * @brief Convert a hex string into binary represented as vector of integers.
  *
  * @param s
  * @return std::vector<int>
  */
-std::vector<int> str_to_binary(std::string s);
+std::vector<int> hex_str_to_binary(std::string s);
 
 /**
  * @brief Convert an integer to binary form with specified size.

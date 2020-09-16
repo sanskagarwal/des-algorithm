@@ -7,8 +7,8 @@
 #include <string>
 #include <vector>
 
-#define DES_KEY_SIZE 8
-#define DES_BLOCK_SIZE 8
+#define DES_KEY_SIZE 16
+#define DES_BLOCK_SIZE 16
 
 namespace des {
 /**
