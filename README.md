@@ -33,4 +33,4 @@ The script allows encryption and decryption using a 8-byte key for both text (in
 
 2. For File based (a binary file)
     - Enter input file location, output file location and key (in hex).
-    - The script will generate a file which will contain the required operation in hex.
+    - The script will encrypt the input file in binary file and decrypt it in original form.

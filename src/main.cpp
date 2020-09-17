@@ -121,12 +121,11 @@ int main() {
 				std::ios::out | std::ios::trunc | std::ios::binary);
 		if (inp_file.is_open()) {
 			std::streampos size = inp_file.tellg();
-			char *memblock = new char[size];
+			std::vector<unsigned char> buffer(size, 0);
 			inp_file.seekg(0, std::ios::beg);
-			inp_file.read(memblock, size);
+			inp_file.read((char*) &buffer[0], size);
 			inp_file.close();
 
-			std::string buffer(memblock, memblock + size);
 			std::ostringstream hex_buffer_stream;
 			for (int i = 0; i < buffer.size(); i++) {
 				int bin_repr = buffer[i] & 0xff;
@@ -158,8 +157,18 @@ int main() {
 				text_to_save = decrypt_str;
 			}
 
+			// Convert hex string to text and save.
 			if (out_file.is_open()) {
-				out_file.write(&text_to_save[0], text_to_save.size());
+				int out_text_size = text_to_save.size() / 2;
+				std::vector<unsigned char> out_memblock(out_text_size, 0);
+				for (int i = 0; i < 2 * out_text_size; i += 2) {
+					char c1 = text_to_save[i];
+					char c2 = text_to_save[i + 1];
+					int bin_rep = hex_char_to_int.at(c1) * 16
+							+ hex_char_to_int.at(c2);
+					out_memblock[i / 2] = bin_rep;
+				}
+				out_file.write((char*) &out_memblock[0], out_text_size);
 				out_file.close();
 
 				std::cout << "Outfile written successfully!!";
