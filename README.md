@@ -23,13 +23,14 @@ Now, run the file using
 
 ## Usage
 
-The implementation is in [ECB mode](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Electronic_codebook_(ECB)) and uses [PKCS#7](https://en.wikipedia.org/wiki/Padding_(cryptography)#PKCS%235_and_PKCS%237) for padding.
+The implementation is in [ECB mode](<https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Electronic_codebook_(ECB)>) and uses [PKCS#7](<https://en.wikipedia.org/wiki/Padding_(cryptography)#PKCS%235_and_PKCS%237>) for padding.
 
-The script allows encryption and decryption using a 8-byte key for both text (in hex) and file.
+The script allows encryption and decryption using a 8-byte key for both text (in hex) and binary files.
 
-1. For text based
+1. For Text based
+
     - Enter text to be encrypted/decrypted (in hex) and key (in hex).
 
-2. For File based
-    - Enter input file location and key (in hex).
-    - The script will generate a file called "outfile" which will contain the required operation in hex.
+2. For File based (a binary file)
+    - Enter input file location, output file location and key (in hex).
+    - The script will generate a file which will contain the required operation in hex.

@@ -70,6 +70,8 @@ int main() {
 		std::cout << "Enter Key (in hex): ";
 		std::cin >> key;
 
+		std::clock_t start_time = clock();
+
 		if (key.size() % 2 || text.size() % 2) {
 			std::cout << "Invalid hex string";
 			return 0;
@@ -92,20 +94,30 @@ int main() {
 			unpad_hex_string(decrypt_str);
 			std::cout << "Decrypted form: " << decrypt_str << "\n";
 		}
+
+		std::clock_t stop_time = clock();
+		double time_taken = double(stop_time - start_time)
+				/ double(CLOCKS_PER_SEC);
+		std::cout << "\nTime Elapsed : " << std::fixed << time_taken
+				<< std::setprecision(5) << " s\n";
+
 		break;
 	}
 	case 2: {
-		std::string fname, key;
+		std::string fname, key, out_fname;
 		std::cout << "Enter filename: ";
 		std::cin >> fname;
+		std::cout << "Enter output filename: ";
+		std::cin >> out_fname;
 		std::cout << "Enter Key (in hex): ";
 		std::cin >> key;
 
+		std::clock_t start_time = clock();
+
 		std::ifstream inp_file;
 		std::ofstream out_file;
-		inp_file.open("io/" + fname,
-				std::ios::in | std::ios::binary | std::ios::ate);
-		out_file.open("io/outfile",
+		inp_file.open(fname, std::ios::in | std::ios::binary | std::ios::ate);
+		out_file.open(out_fname,
 				std::ios::out | std::ios::trunc | std::ios::binary);
 		if (inp_file.is_open()) {
 			std::streampos size = inp_file.tellg();
@@ -150,13 +162,20 @@ int main() {
 				out_file.write(&text_to_save[0], text_to_save.size());
 				out_file.close();
 
-				std::cout << "outfile written successfully!!";
+				std::cout << "Outfile written successfully!!";
 			} else {
 				std::cout << "Error writing file, Exiting..";
 			}
 		} else {
 			std::cout << "Error opening file, Exiting..";
 		}
+
+		std::clock_t stop_time = clock();
+		double time_taken = double(stop_time - start_time)
+				/ double(CLOCKS_PER_SEC);
+		std::cout << "\nTime Elapsed : " << std::fixed << time_taken
+				<< std::setprecision(5) << " s\n";
+
 		break;
 	}
 	default: {
